@@ -1,0 +1,15 @@
+{
+  "name": "tab-manager",
+  "version": "1.0.0",
+  "main": "dist/background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/main.ts --bundle --outfile=dist/main.js --platform=browser --format=esm && esbuild src/popup.ts --bundle --outfile=dist/popup.js --platform=browser --format=esm && cp -R src/asset/* dist/"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}
