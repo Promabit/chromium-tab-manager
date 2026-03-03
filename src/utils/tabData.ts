@@ -1,6 +1,10 @@
 import { getStorage, setStorage } from "./utils";
 
-export type TabDataValue = { originUrl?: string; lastActivityAt?: number };
+export type TabDataValue = {
+  originUrl?: string;
+  lastActivityAt?: number;
+  createdAt?: number;
+};
 
 const tabData: Record<string, TabDataValue> = {};
 
@@ -35,3 +39,9 @@ export const getTabOriginIds = () =>
       return null;
     })
     .filter((item) => !!item);
+
+export const getTabAge = (tabId: string): number | null => {
+  const data = tabData[tabId];
+  if (!data?.createdAt) return null;
+  return Date.now() - data.createdAt;
+};

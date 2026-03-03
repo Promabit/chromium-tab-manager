@@ -2,13 +2,22 @@
   "manifest_version": 3,
   "name": "Brave Tab Manager",
   "version": "1.0",
-  "permissions": ["tabs", "webNavigation", "storage", "tabGroups"],
+  "permissions": ["tabs", "webNavigation", "storage", "tabGroups", "alarms"],
   "background": {
     "service_worker": "main.js",
     "type": "module"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "mru-switcher.html"
+  },
+  "commands": {
+    "open-mru-switcher": {
+      "suggested_key": {
+        "default": "Alt+A",
+        "mac": "Alt+A"
+      },
+      "description": "Open MRU tab switcher"
+    }
   },
   "host_permissions": ["*://*/*"]
 }

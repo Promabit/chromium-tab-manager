@@ -1,5 +1,6 @@
 import { onTabCreated } from "./listeners/onTabCreated";
 import { onTabUpdated } from "./listeners/onTabUpdated";
+import "./listeners/onCommand";
 import { archiveTab } from "./utils/tabArchive";
 import {
   deleteTabData,
@@ -9,6 +10,12 @@ import {
 } from "./utils/tabData";
 import { closeTab, getTab, queryTabs } from "./utils/tabs";
 import { resetCloseTabGroupsTimeout, updateTabGroup } from "./utils/utils";
+import {
+  initMRUHistory,
+  updateMRUHistory,
+  removeMRUEntry,
+} from "./utils/mruHistory";
+import { scheduleDailyCheck } from "./utils/tabLifecycle";
 
 declare const chrome: any;
 const tabsArchiveTime = 12 * 60 * 60 * 1000; // 12 hours
@@ -16,6 +23,8 @@ const thirtySeconds = 30000;
 
 (async () => {
   await initTabData();
+  await initMRUHistory();
+  await scheduleDailyCheck();
 })();
 
 // main logic when tab is created
@@ -27,6 +36,7 @@ chrome.tabs.onUpdated.addListener(onTabUpdated);
 chrome.tabs.onRemoved.addListener(async (tabId: number) => {
   resetCloseTabGroupsTimeout();
   deleteTabData(String(tabId));
+  await removeMRUEntry(tabId);
 });
 
 chrome.tabGroups.onUpdated.addListener(() => {
@@ -35,8 +45,8 @@ chrome.tabGroups.onUpdated.addListener(() => {
 
 chrome.tabs.onActivated.addListener(async ({ tabId }: any) => {
   const tab = await getTab(tabId);
-  // console.log("UPDATING lastActivityAt", { tab });
   await updateTabData(tabId, { lastActivityAt: Date.now() });
+  await updateMRUHistory(tabId);
 
   if (tab.groupId) {
     await updateTabGroup(tab.groupId, {

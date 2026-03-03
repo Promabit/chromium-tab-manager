@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Switch to Tab</title>
+    <style>
+      body {
+        width: 500px;
+        max-height: 600px;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui;
+      }
+      .tab-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .tab-item:hover,
+      .tab-item.selected {
+        background: #f5f5f5;
+      }
+      .tab-favicon {
+        width: 16px;
+        height: 16px;
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+      .tab-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .tab-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tab-url {
+        font-size: 12px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tab-list"></div>
+    <script src="mru-switcher.js"></script>
+  </body>
+</html>

@@ -5,6 +5,11 @@ import {
 } from "../utils/tabData";
 import { closeTab, getTab, groupTabs } from "../utils/tabs";
 import { getStringColor, queryTabGroups, updateTabGroup } from "../utils/utils";
+import {
+  findTabInCacheByUrl,
+  moveTabToActive,
+  GROUP_NAMES,
+} from "../utils/tabGroups";
 
 declare const chrome: any;
 
@@ -17,9 +22,22 @@ export const onTabCreated = async (tab: any) => {
 
   const url = new URL(tabUrl);
   const tabGroupName = url.searchParams.get("tabManagerGroup");
+  let cleanUrl = tabUrl;
   if (tabGroupName) {
     url.searchParams.delete("tabManagerGroup");
-    chrome.tabs.update(tab.id, { url: url.toString() });
+    cleanUrl = url.toString();
+    chrome.tabs.update(tab.id, { url: cleanUrl });
+
+    if (tabGroupName === GROUP_NAMES.ACTIVE) {
+      const cachedTab = await findTabInCacheByUrl(cleanUrl);
+      if (cachedTab && cachedTab.id !== tab.id) {
+        console.log(`Found cached tab ${cachedTab.id}, moving to Active`);
+        await moveTabToActive(cachedTab.id);
+        await chrome.tabs.update(cachedTab.id, { active: true });
+        await closeTab(tab.id);
+        return;
+      }
+    }
   }
   const matchingOrigin = originUrls.find(
     ([_key, originUrl]) => originUrl === url.toString(),
@@ -44,7 +62,10 @@ export const onTabCreated = async (tab: any) => {
       deleteTabData(String(existingTabId));
     }
   } else {
-    await updateTabData(tab.id, { originUrl: url.toString() });
+    await updateTabData(tab.id, {
+      originUrl: cleanUrl,
+      createdAt: Date.now(),
+    });
 
     if (tabGroupName) {
       const nextColor = getStringColor(tabGroupName);

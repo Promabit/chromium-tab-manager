@@ -1,6 +1,19 @@
 declare const chrome: any;
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const testButton = document.getElementById("test-mru-switcher");
+  if (testButton) {
+    testButton.addEventListener("click", () => {
+      chrome.windows.create({
+        url: "mru-switcher.html",
+        type: "popup",
+        width: 500,
+        height: 600,
+        focused: true,
+      });
+    });
+  }
+
   const archiveList: HTMLElement = document.getElementById(
     "archive-list",
   ) as HTMLElement;
